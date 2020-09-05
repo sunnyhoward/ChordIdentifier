@@ -32,16 +32,8 @@ def findnote(freqofnote,df):
 
 
 
-a=0
-option = input('Is the audio a single note (s) or a chord? (c) ')
-while a==0:
-    if option != 's' and option != 'c':
-        print("that is not a correct answer, please enter 's' or 'c'.")
-        option = input('Is the audio a single note (s) or a chord? (c) ')
-    else:
-        a=1
 
-tempo = input('Enter Tempo of song (bpm) ')
+tempo = 115 #input('Enter Tempo of song (bpm) ')
 
 sound_file = wave.open(filename, 'r')
 file_length = sound_file.getnframes()   #Decode Audio File
@@ -61,41 +53,35 @@ plt.plot(np.arange(file_length),sound)
 #now need to divide the part into bars
 seconds = file_length/samplerate
 beats = seconds/60 * float(tempo)
-elementsbeats = file_length/beats
+elementsbeats = int(file_length/beats)
 
 
-n=0
-for n in range(np.ceil(beats)):
-    beat = sound[n:elementsbeats]
-    n+=elementsbeats
+a=0
+for n in range(int(np.ceil(beats))):
+    beat = sound[a:a+elementsbeats]
+    a+=elementsbeats
 # plt.plot(np.arange(file_length)[4000:20000],sound[4000:20000])
-
-chord1 = sound#[4000:20000]
-
-fourier = np.fft.fft(chord1)
-freq = np.fft.fftfreq(len(chord1),1/samplerate)
-
-fourier = fourier[freq>2]
-freq = freq[freq>2]
-
-#plt.plot(freq,fourier.real,freq,fourier.imag)
-
-plt.figure()
-plt.plot(freq[1:4000],fourier.real[1:4000])
-#plt.plot(freq[1:4000],fourier.imag[1:4000])
-
-
-sortorder = np.argsort(np.absolute(fourier)**2)
-
-bestfreqs = freq[sortorder[-10:]]
-
-if option=='s':
-    freqofnote = bestfreqs[-1]
-    note,octave = findnote(freqofnote,df)
-    print('The frequency of the note is ' + str(np.round(freqofnote,2))+' Hz')
-    print('The note is '+ note+octave)
     
-elif option == 'c':
+    chord1 = beat#[4000:20000]
+    
+    fourier = np.fft.fft(chord1)
+    freq = np.fft.fftfreq(len(chord1),1/samplerate)
+    
+    fourier = fourier[freq>50]
+    freq = freq[freq>50]
+    
+    #plt.plot(freq,fourier.real,freq,fourier.imag)
+    
+    plt.figure()
+    plt.plot(freq[1:4000],fourier.real[1:4000])
+    #plt.plot(freq[1:4000],fourier.imag[1:4000])
+    
+    
+    sortorder = np.argsort(np.absolute(fourier)**2)
+    
+    bestfreqs = freq[sortorder[-10:]]
+    
+    
     freq1 = bestfreqs[-1]
     freq2 = bestfreqs[-2]
     freq3 = bestfreqs[-3]
